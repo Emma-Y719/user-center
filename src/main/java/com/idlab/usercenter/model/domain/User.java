@@ -1,6 +1,7 @@
 package com.idlab.usercenter.model.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
@@ -71,6 +72,7 @@ public class User implements Serializable {
     /**
      * 是否删除 0-否
      */
+    @TableLogic
     private Integer isDelete;
 
     @TableField(exist = false)

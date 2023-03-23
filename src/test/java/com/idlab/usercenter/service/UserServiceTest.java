@@ -41,7 +41,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void userRegister() {
+    public void userRegisterTest() {
         String userAccount = "";
         String userPassword = "12345678";
         String checkPassword = "12345678";
@@ -63,4 +63,15 @@ public class UserServiceTest {
         result = userService.userRegister(userAccount, userPassword, checkPassword);
         Assertions.assertTrue(result > 0);
     }
+
+    /*
+      @Test
+    public void userLoginTest() {
+        String userAccount = "4325";
+        String userPassword = "12345678";
+        HttpServletRequest request = new HttpServletRequest() {
+        }
+        userService.userLogin(userAccount, userPassword, new HttpServletRequest());
+    }
+    */
 }
