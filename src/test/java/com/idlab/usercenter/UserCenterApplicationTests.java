@@ -1,7 +1,7 @@
 package com.idlab.usercenter;
 
 import com.idlab.usercenter.mapper.UserMapper;
-import com.idlab.usercenter.model.User;
+import com.idlab.usercenter.model.domain.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
