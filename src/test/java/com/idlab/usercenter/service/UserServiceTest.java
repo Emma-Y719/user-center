@@ -39,4 +39,28 @@ public class UserServiceTest {
 
 
     }
+
+    @Test
+    public void userRegister() {
+        String userAccount = "";
+        String userPassword = "12345678";
+        String checkPassword = "12345678";
+        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
+        userAccount = "ffds_5t43t";
+        userPassword = "123456";
+        checkPassword = "12345678";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
+        userPassword = "12345687";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
+        userPassword = "12345678";
+        userAccount = "emma719";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
+        userAccount = "ffds_5t43t";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertTrue(result > 0);
+    }
 }
