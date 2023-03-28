@@ -56,20 +56,22 @@ public class UserController {
         }
         return userService.userLogin(userAccount, userPassword, request);
     }
+
     @GetMapping("/search")
     public List<User> searchUsers(String username, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
             return new ArrayList<>();
         }
-        if (StringUtils.isBlank(username)) {
-            return new ArrayList<>();
-        }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("username", username);
-        return userService.list(queryWrapper).stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
+        if (StringUtils.isNotBlank(username)) {
+            queryWrapper.like("username", username);
+        }
+        List<User> userList = userService.list(queryWrapper);
+        return userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
     }
-    @GetMapping("/delete")
+
+    @PostMapping ("/delete")
     public boolean deleteUsers(long id, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
