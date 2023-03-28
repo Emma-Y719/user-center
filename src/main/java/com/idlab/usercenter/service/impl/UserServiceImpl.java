@@ -31,9 +31,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public static final String SALT = "idlab";
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword, String vipCode) {
         //1、校验输入数据
-        if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword, vipCode)) {
             return -1;
         }
         if (userPassword.length() < 8 || checkPassword.length() < 8) {
@@ -46,10 +46,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (!userAccount.matches("\\w{6,}")) {
             return -1;
         }
+        if (vipCode.length() > 6) {
+            return -1;
+        }
         //账户不重复
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_account", userAccount);
         long count = this.count(queryWrapper);
+        if (count > 0) {
+            return -1;
+        }
+        //会员码不重复
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("vip_code", vipCode);
+        count = this.count(queryWrapper);
         if (count > 0) {
             return -1;
         }
@@ -125,6 +135,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setUserRole(originalUser.getUserRole());
         safetyUser.setUsername(originalUser.getUsername());
         safetyUser.setUserAccount(originalUser.getUserAccount());
+        safetyUser.setVipCode(originalUser.getVipCode());
         safetyUser.setAvatarUrl(originalUser.getAvatarUrl());
         safetyUser.setGender(originalUser.getGender());
         safetyUser.setPhone(originalUser.getPhone());

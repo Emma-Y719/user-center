@@ -45,33 +45,24 @@ public class UserServiceTest {
         String userAccount = "";
         String userPassword = "12345678";
         String checkPassword = "12345678";
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        String vipCode = "123456";
+        long result = userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
         Assertions.assertEquals(-1, result);
         userAccount = "ffds_5t43t";
         userPassword = "123456";
         checkPassword = "12345678";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
         Assertions.assertEquals(-1, result);
         userPassword = "12345687";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
         Assertions.assertEquals(-1, result);
         userPassword = "12345678";
         userAccount = "emma719";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
         Assertions.assertEquals(-1, result);
         userAccount = "ffds_5t43t";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
         Assertions.assertTrue(result > 0);
     }
 
-    /*
-      @Test
-    public void userLoginTest() {
-        String userAccount = "4325";
-        String userPassword = "12345678";
-        HttpServletRequest request = new HttpServletRequest() {
-        }
-        userService.userLogin(userAccount, userPassword, new HttpServletRequest());
-    }
-    */
 }

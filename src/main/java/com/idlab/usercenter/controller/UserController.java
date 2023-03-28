@@ -36,10 +36,11 @@ public class UserController {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword)) {
+        String vipCode = userRegisterRequest.getVipCode();
+        if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword, vipCode)) {
             return null;
         }
-        return userService.userRegister(userAccount, userPassword, checkPassword);
+        return userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
     }
 
     @PostMapping("/login")
