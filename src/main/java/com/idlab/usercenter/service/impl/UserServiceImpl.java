@@ -102,6 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         request.getSession().setAttribute(USER_LOGIN_STATUS, safetyUser);
         return safetyUser;
     }
+
 }
 
 
