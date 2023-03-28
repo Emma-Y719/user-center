@@ -55,7 +55,12 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * 状态 0-正常
+     * 角色 0-普通 1-管理员
+     */
+    private Integer userRole;
+
+    /**
+     * 角色 0-正常
      */
     private Integer userStatus;
 

@@ -7,6 +7,10 @@ spring:
     url: jdbc:mysql://localhost:3306/fitting_room
     username: root
     password: Emma991203
+  # session 失效时间为一天
+  session:
+    timeout: 86400
+
 
 server:
   port: 8080

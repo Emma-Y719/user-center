@@ -6,13 +6,18 @@ import com.idlab.usercenter.model.domain.User;
 import com.idlab.usercenter.model.request.UserLoginRequest;
 import com.idlab.usercenter.model.request.UserRegisterRequest;
 import com.idlab.usercenter.service.UserService;
-import java.util.Collections;
+
+import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.idlab.usercenter.constant.UserConstant.ADMIN_ROLE;
+import static com.idlab.usercenter.constant.UserConstant.USER_LOGIN_STATUS;
 
 
 /**
@@ -52,20 +57,37 @@ public class UserController {
         return userService.userLogin(userAccount, userPassword, request);
     }
     @GetMapping("/search")
-    public List<User> searchUsers(String username) {
+    public List<User> searchUsers(String username, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
-        if (StringUtils.isNotBlank(username)) {
-            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.like("username", username);
-            return userService.list(queryWrapper);
+        if (!isAdmin(request)) {
+            return new ArrayList<>();
         }
-        return Collections.emptyList();
+        if (StringUtils.isBlank(username)) {
+            return new ArrayList<>();
+        }
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("username", username);
+        return userService.list(queryWrapper).stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
     }
     @GetMapping("/delete")
-    public boolean deleteUsers(long id) {
+    public boolean deleteUsers(long id, HttpServletRequest request) {
+        //用户鉴权 仅管理员可查
+        if (!isAdmin(request)) {
+            return false;
+        }
         if (id <= 0) {
             return false;
         }
         return userService.removeById(id);
+    }
+
+    /**
+     * 判断是否为管理员
+     * @param request 请求
+     * @return 是否为管理员
+     */
+    private boolean isAdmin(HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        return user != null && user.getUserRole() == ADMIN_ROLE;
     }
 }

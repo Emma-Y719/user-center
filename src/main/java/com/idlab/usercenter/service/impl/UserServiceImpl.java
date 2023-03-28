@@ -12,6 +12,8 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.idlab.usercenter.constant.UserConstant.USER_LOGIN_STATUS;
+
 /**
 * @author Emma
 * @description 针对表【user】的数据库操作Service实现
@@ -24,7 +26,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
     public static final String SALT = "idlab";
-    public static final String USER_LOGIN_STATUS = "userLoginStatus";
+
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
         //1、校验输入数据
@@ -88,18 +90,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
         //3、用户信息脱敏
-        User safetyUser = new User();
-        safetyUser.setId(user.getId());
-        safetyUser.setUsername(user.getUsername());
-        safetyUser.setUserAccount(user.getUserAccount());
-        safetyUser.setAvatarUrl(user.getAvatarUrl());
-        safetyUser.setGender(user.getGender());
-        safetyUser.setPhone(user.getPhone());
-        safetyUser.setEmail(user.getEmail());
-        safetyUser.setUserStatus(user.getUserStatus());
-        safetyUser.setCreateTime(user.getCreateTime());
+        User safetyUser = getSafetyUser(user);
         //4、记录用户的登录态
         request.getSession().setAttribute(USER_LOGIN_STATUS, safetyUser);
+        return safetyUser;
+    }
+    @Override
+    public User getSafetyUser(User originalUser) {
+        User safetyUser = new User();
+        safetyUser.setId(originalUser.getId());
+        safetyUser.setUserRole(originalUser.getUserRole());
+        safetyUser.setUsername(originalUser.getUsername());
+        safetyUser.setUserAccount(originalUser.getUserAccount());
+        safetyUser.setAvatarUrl(originalUser.getAvatarUrl());
+        safetyUser.setGender(originalUser.getGender());
+        safetyUser.setPhone(originalUser.getPhone());
+        safetyUser.setEmail(originalUser.getEmail());
+        safetyUser.setUserStatus(originalUser.getUserStatus());
+        safetyUser.setCreateTime(originalUser.getCreateTime());
         return safetyUser;
     }
 
