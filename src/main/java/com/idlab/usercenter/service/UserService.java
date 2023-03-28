@@ -4,6 +4,7 @@ import com.idlab.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author Emma
@@ -28,6 +29,21 @@ public interface UserService extends IService<User> {
      * @return 脱敏的用户信息
      */
     User userLogin(String userAccount, String userPassword, HttpServletRequest request);
+
+    /**
+     * 用户注销
+     * @param request 请求
+     * @return 1-注销成功
+     */
+    int userLogout(HttpServletRequest request);
+
+    /**
+     * 用户查询
+     *
+     * @param username 用户名称
+     * @return 满足条件的用户
+     */
+    List<User> searchUser(String username);
 
     /**
      * 用户信息脱敏

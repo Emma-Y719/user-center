@@ -1,7 +1,6 @@
 package com.idlab.usercenter.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.idlab.usercenter.model.domain.User;
 import com.idlab.usercenter.model.request.UserLoginRequest;
 import com.idlab.usercenter.model.request.UserRegisterRequest;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.idlab.usercenter.constant.UserConstant.ADMIN_ROLE;
 import static com.idlab.usercenter.constant.UserConstant.USER_LOGIN_STATUS;
@@ -57,18 +55,32 @@ public class UserController {
         return userService.userLogin(userAccount, userPassword, request);
     }
 
+    @PostMapping("/logout")
+    public Integer userLogout(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return userService.userLogout(request);
+    }
+
+    @GetMapping("/current")
+    public User getCurrentUser(HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (currentUser == null) {
+            return null;
+        }
+        //更新user的信息
+        User renewedUser = userService.getById(currentUser.getId());
+        return userService.getSafetyUser(renewedUser);
+    }
+
     @GetMapping("/search")
     public List<User> searchUsers(String username, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
             return new ArrayList<>();
         }
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(username)) {
-            queryWrapper.like("username", username);
-        }
-        List<User> userList = userService.list(queryWrapper);
-        return userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
+        return userService.searchUser(username);
     }
 
     @PostMapping ("/delete")

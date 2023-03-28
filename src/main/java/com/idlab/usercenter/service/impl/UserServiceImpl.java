@@ -12,6 +12,9 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.idlab.usercenter.constant.UserConstant.USER_LOGIN_STATUS;
 
 /**
@@ -95,8 +98,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         request.getSession().setAttribute(USER_LOGIN_STATUS, safetyUser);
         return safetyUser;
     }
+
+    @Override
+    public int userLogout(HttpServletRequest request) {
+        request.getSession().removeAttribute(USER_LOGIN_STATUS);
+        return 1;
+    }
+
+    @Override
+    public List<User> searchUser(String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(username)) {
+            queryWrapper.like("username", username);
+        }
+        List<User> userList = this.list(queryWrapper);
+        return userList.stream().map(this::getSafetyUser).collect(Collectors.toList());
+    }
+
     @Override
     public User getSafetyUser(User originalUser) {
+        if (originalUser == null) {
+            return null;
+        }
         User safetyUser = new User();
         safetyUser.setId(originalUser.getId());
         safetyUser.setUserRole(originalUser.getUserRole());
