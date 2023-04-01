@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: user-center
+  # DataSource Config
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fitting_room
+    username: root
+    password:
+
+server:
+  port: 8080
+  servlet:
+    session:
+      # session 失效时间为一天
+      timeout: 86400
+

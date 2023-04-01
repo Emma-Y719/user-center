@@ -86,7 +86,7 @@ public class UserController {
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
+            throw new BusinessException(ErrorCode.NO_AUTH, "非管理员");
         }
         List<User> users = userService.searchUser(username);
         return ResultUtils.success(users);
@@ -96,7 +96,7 @@ public class UserController {
     public BaseResponse<Boolean> deleteUsers(long id, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
+            throw new BusinessException(ErrorCode.NO_AUTH, "非管理员");
         }
         if (id <= 0) {
             return null;
