@@ -1,5 +1,6 @@
 package com.idlab.usercenter.common;
 
+import com.idlab.usercenter.exception.BusinessException;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,6 +37,19 @@ public class BaseResponse<T> implements Serializable {
         this.data = null;
         this.msg = errorCode.getMsg();
         this.description = errorCode.getDescription();
+    }
+    public BaseResponse(ErrorCode errorCode, String description) {
+        this.code = errorCode.getCode();
+        this.data = null;
+        this.msg = errorCode.getMsg();
+        this.description = description;
+    }
+
+    public BaseResponse(BusinessException e) {
+        this.code = e.getCode();
+        this.data = null;
+        this.msg = e.getMessage();
+        this.description = e.getDescription();
     }
     private BaseResponse() {}
 }

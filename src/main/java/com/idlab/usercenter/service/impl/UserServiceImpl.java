@@ -2,6 +2,8 @@ package com.idlab.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.idlab.usercenter.common.ErrorCode;
+import com.idlab.usercenter.exception.BusinessException;
 import com.idlab.usercenter.model.domain.User;
 import com.idlab.usercenter.service.UserService;
 import com.idlab.usercenter.mapper.UserMapper;
@@ -34,34 +36,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public long userRegister(String userAccount, String userPassword, String checkPassword, String vipCode) {
         //1、校验输入数据
         if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword, vipCode)) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userPassword.length() < 8 || checkPassword.length() < 8) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
         if (!checkPassword.equals(userPassword)) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码输入不一致");
         }
         //账户只包含数字字母下划线
         if (!userAccount.matches("\\w{6,}")) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号不符合要求");
         }
         if (vipCode.length() > 6) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "会员码不符合要求");
         }
         //账户不重复
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_account", userAccount);
         long count = this.count(queryWrapper);
         if (count > 0) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号已存在");
         }
         //会员码不重复
         queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("vip_code", vipCode);
         count = this.count(queryWrapper);
         if (count > 0) {
-            return -1;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "会员码已注册");
         }
         //2、加密密码（重要！）
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -72,7 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setVipCode(vipCode);
         boolean saveResult = this.save(user);
         if (!saveResult) {
-            return -1;
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "保存失败");
         }
         return user.getId();
     }
@@ -81,14 +83,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         //1、校验输入数据
         if (StringUtils.isAllBlank(userAccount, userPassword)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userPassword.length() < 8) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
         //账户只包含数字字母下划线
         if (!userAccount.matches("\\w{6,}")) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号不符合要求");
         }
         //2、核验密码
         //加密

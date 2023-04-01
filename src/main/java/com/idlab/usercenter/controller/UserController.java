@@ -2,7 +2,9 @@ package com.idlab.usercenter.controller;
 
 
 import com.idlab.usercenter.common.BaseResponse;
+import com.idlab.usercenter.common.ErrorCode;
 import com.idlab.usercenter.common.ResultUtils;
+import com.idlab.usercenter.exception.BusinessException;
 import com.idlab.usercenter.model.domain.User;
 import com.idlab.usercenter.model.request.UserLoginRequest;
 import com.idlab.usercenter.model.request.UserRegisterRequest;
@@ -32,14 +34,14 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
         String vipCode = userRegisterRequest.getVipCode();
         if (StringUtils.isAllBlank(userAccount, userPassword, checkPassword, vipCode)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         long result = userService.userRegister(userAccount, userPassword, checkPassword, vipCode);
         return ResultUtils.success(result);
@@ -48,12 +50,12 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         if (StringUtils.isAllBlank(userAccount, userPassword)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         User user = userService.userLogin(userAccount, userPassword, request);
         return ResultUtils.success(user);
@@ -62,7 +64,7 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
         }
         int result = userService.userLogout(request);
         return ResultUtils.success(result);
@@ -72,7 +74,7 @@ public class UserController {
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
         if (currentUser == null) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
         }
         //更新user的信息
         User renewedUser = userService.getById(currentUser.getId());
@@ -84,7 +86,7 @@ public class UserController {
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
         }
         List<User> users = userService.searchUser(username);
         return ResultUtils.success(users);
@@ -94,7 +96,7 @@ public class UserController {
     public BaseResponse<Boolean> deleteUsers(long id, HttpServletRequest request) {
         //用户鉴权 仅管理员可查
         if (!isAdmin(request)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求为空");
         }
         if (id <= 0) {
             return null;
